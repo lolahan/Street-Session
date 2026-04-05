@@ -1,0 +1,1758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Street Sessions — Free Live Music in Dublin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    /* ── Variables ─────────────────────────────────── */
+    :root {
+      --blue:      #1A6BFF;
+      --blue-dk:   #1559ba;
+      --dark:      #111111;
+      --mid:       #555555;
+      --light:     #f5f5f5;
+      --white:     #ffffff;
+      --border:    rgba(0,0,0,0.08);
+      --r:         12px;
+      --nav-h:     66px;
+    }
+
+    /* ── Reset ─────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      color: var(--dark);
+      background: var(--white);
+      -webkit-font-smoothing: antialiased;
+    }
+    a { text-decoration: none; color: inherit; }
+
+    /* ── Container ──────────────────────────────────── */
+    .wrap {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 40px;
+    }
+    #events .wrap { padding-left: 4rem; padding-right: 4rem; }
+    @media (max-width: 700px) { #events .wrap { padding-left: 20px; padding-right: 20px; } }
+
+    /* ── Fade-in ────────────────────────────────────── */
+    .fade {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.55s ease, transform 0.55s ease;
+    }
+    .fade.in { opacity: 1; transform: none; }
+    .fade.d1 { transition-delay: 0.08s; }
+    .fade.d2 { transition-delay: 0.16s; }
+    .fade.d3 { transition-delay: 0.24s; }
+
+    /* ════════════════════════════════════════════════
+       NAV
+    ════════════════════════════════════════════════ */
+    #nav {
+      position: fixed;
+      inset: 0 0 auto 0;
+      z-index: 200;
+      height: var(--nav-h);
+      background: var(--white);
+      transition: box-shadow 0.25s;
+    }
+    #nav.scrolled { box-shadow: 0 0 0 0.5px var(--border); }
+
+    .nav-row {
+      height: var(--nav-h);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-brand {
+      font-size: 17px;
+      font-weight: 800;
+      letter-spacing: -0.4px;
+      color: var(--dark);
+    }
+    .nav-brand span { color: var(--blue); }
+
+    .nav-btns {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      font-size: 14px;
+      font-weight: 600;
+      padding: 10px 20px;
+      border-radius: var(--r);
+      cursor: pointer;
+      transition: background 0.18s, color 0.18s, border-color 0.18s, transform 0.12s;
+      border: 1.5px solid transparent;
+    }
+    .btn:active { transform: scale(0.97); }
+    .btn-primary {
+      background: var(--blue);
+      color: var(--white);
+      border-color: var(--blue);
+    }
+    .btn-primary:hover { background: var(--blue-dk); border-color: var(--blue-dk); }
+    .btn-outline {
+      background: var(--white);
+      color: var(--blue);
+      border-color: var(--blue);
+    }
+    .btn-outline:hover { background: rgba(26,107,255,0.06); }
+    .btn-ghost {
+      background: transparent;
+      color: var(--dark);
+      border-color: var(--border);
+    }
+    .btn-ghost:hover { border-color: #aaa; }
+
+    /* hamburger */
+    .burger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      padding: 6px;
+    }
+    .burger b {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--dark);
+      border-radius: 2px;
+      transition: transform 0.28s, opacity 0.28s;
+    }
+    .burger.open b:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .burger.open b:nth-child(2) { opacity: 0; }
+    .burger.open b:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    .nav-mob {
+      display: none;
+      flex-direction: column;
+      background: var(--white);
+      border-top: 0.5px solid var(--border);
+      padding: 12px 40px 20px;
+      gap: 4px;
+    }
+    .nav-mob.open { display: flex; }
+    .nav-mob .btn { justify-content: center; }
+
+    /* ════════════════════════════════════════════════
+       HERO
+    ════════════════════════════════════════════════ */
+    #hero {
+      min-height: 100vh;
+      padding-top: var(--nav-h);
+      display: flex;
+      align-items: center;
+    }
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      align-items: center;
+      padding: 72px 0;
+      width: 100%;
+    }
+
+    /* left */
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 24px;
+    }
+    .hero-eyebrow::before {
+      content: '';
+      display: block;
+      width: 8px;
+      height: 8px;
+      background: var(--blue);
+      border-radius: 50%;
+    }
+
+    .hero-h1 {
+      font-size: clamp(36px, 5vw, 64px);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: -2px;
+      color: var(--dark);
+      margin-bottom: 20px;
+    }
+    .hero-sub {
+      font-size: 17px;
+      font-weight: 400;
+      line-height: 1.65;
+      color: var(--mid);
+      max-width: 440px;
+      margin-bottom: 40px;
+    }
+    .hero-ctas { display: flex; gap: 12px; flex-wrap: wrap; }
+    .hero-ctas .btn { font-size: 15px; padding: 13px 26px; }
+
+    /* right card */
+    .hero-card {
+      background: var(--blue);
+      border-radius: 20px;
+      aspect-ratio: 1 / 1.1;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 32px;
+    }
+    .hero-card-stars {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .hstar {
+      position: absolute;
+      color: white;
+    }
+    .hstar.a { width: 75%; top: -18%; right: -12%; opacity: 0.12; }
+    .hstar.b { width: 42%; bottom: 22%; left: -10%; opacity: 0.1; }
+    .hstar.c { width: 28%; top: 50%; right: 10%; opacity: 0.18; }
+
+    /* card top — brand values */
+    .hero-card-top {
+      position: relative;
+      z-index: 1;
+    }
+    .hero-card-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.55);
+      margin-bottom: 14px;
+    }
+    .hero-card-values {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .hc-value {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .hc-value-icon {
+      width: 32px;
+      height: 32px;
+      background: rgba(255,255,255,0.12);
+      border: 0.5px solid rgba(255,255,255,0.18);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: white;
+    }
+    .hc-value-icon svg { width: 15px; height: 15px; }
+    .hc-value-text { }
+    .hc-value-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: white;
+      line-height: 1.2;
+    }
+    .hc-value-desc {
+      font-size: 12px;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.4;
+    }
+
+    .hero-card-foot {
+      position: relative;
+      z-index: 1;
+    }
+    .hero-card-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.15);
+      border: 0.5px solid rgba(255,255,255,0.25);
+      border-radius: 100px;
+      padding: 8px 16px;
+      font-size: 14px;
+      font-weight: 600;
+      color: white;
+    }
+    .hero-card-pill::before {
+      content: '';
+      width: 8px;
+      height: 8px;
+      background: #4ade80;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ════════════════════════════════════════════════
+       SHARED SECTION STYLES
+    ════════════════════════════════════════════════ */
+    .section { padding: 96px 0; }
+    .section-alt { background: var(--light); }
+
+    .sec-eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--blue);
+      margin-bottom: 10px;
+    }
+    .sec-title {
+      font-size: clamp(28px, 3.5vw, 42px);
+      font-weight: 800;
+      letter-spacing: -1.2px;
+      line-height: 1.1;
+      color: var(--dark);
+      margin-bottom: 14px;
+    }
+    .sec-sub {
+      font-size: 16px;
+      color: var(--mid);
+      line-height: 1.65;
+      max-width: 520px;
+      margin-bottom: 52px;
+    }
+
+    /* ════════════════════════════════════════════════
+       EVENTS — horizontal list
+    ════════════════════════════════════════════════ */
+    .ev-list { display: flex; flex-direction: column; gap: 12px; }
+
+    .ev-card {
+      background: var(--white);
+      border: 0.5px solid var(--border);
+      border-radius: var(--r);
+      display: flex;
+      align-items: stretch;
+      overflow: hidden;
+      cursor: pointer;
+      user-select: none;
+      transition: border-color 0.18s;
+    }
+    .ev-card:hover { border-color: rgba(26,107,255,0.35); }
+
+    /* left accent stripe */
+    .ev-accent { width: 4px; flex-shrink: 0; }
+    .ev-accent-blue   { background: var(--blue); }
+    .ev-accent-gold   { background: #C9A84C; }
+    .ev-accent-orange { background: #FF6B35; }
+
+    /* date column */
+    .ev-date {
+      width: 76px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px 12px;
+    }
+    .ev-day {
+      font-size: 32px;
+      font-weight: 900;
+      letter-spacing: -1.5px;
+      color: var(--dark);
+      line-height: 1;
+    }
+    .ev-month {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--mid);
+      margin-top: 3px;
+    }
+
+    /* vertical divider */
+    .ev-vdivide {
+      width: 0.5px;
+      background: var(--border);
+      flex-shrink: 0;
+      align-self: stretch;
+    }
+
+    /* info column */
+    .ev-info {
+      flex: 1;
+      min-width: 0;
+      padding: 18px 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    .ev-tags {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 7px;
+    }
+    .tag {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+    .tag-free  { background: rgba(26,107,255,0.09); color: var(--blue); }
+    .tag-vip   { background: rgba(201,168,76,0.12); color: #A07820; }
+    .tag-match { background: rgba(255,107,53,0.1);  color: #CC4A15; }
+
+    .ev-title {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+      color: var(--dark);
+      margin-bottom: 6px;
+    }
+    .ev-meta {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+    .ev-meta-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 13px;
+      color: var(--mid);
+    }
+    .ev-meta-item svg { width: 13px; height: 13px; flex-shrink: 0; color: var(--blue); }
+
+    /* actions column */
+    .ev-actions {
+      width: 180px;
+      flex-shrink: 0;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      justify-content: center;
+      border-left: 0.5px solid var(--border);
+    }
+    .ev-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1.5px solid transparent;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      font-family: inherit;
+      white-space: nowrap;
+      width: 100%;
+    }
+    .ev-btn:active { transform: scale(0.97); }
+    .ev-btn-cal   { background: var(--white); color: var(--blue); border-color: var(--blue); }
+    .ev-btn-cal:hover { background: rgba(26,107,255,0.06); }
+    .ev-btn-vip   { background: var(--blue); color: white; }
+    .ev-btn-vip:hover { background: var(--blue-dk); }
+    .ev-btn-match { background: #FF6B35; color: white; }
+    .ev-btn-match:hover { background: #e55a25; }
+
+    @media (max-width: 700px) {
+      .ev-card { flex-wrap: wrap; }
+      .ev-actions {
+        width: 100%;
+        border-left: none;
+        border-top: 0.5px solid var(--border);
+        flex-direction: row;
+        padding: 12px 16px;
+      }
+      .ev-btn { flex: 1; }
+    }
+
+    /* ════════════════════════════════════════════════
+       PARTNER
+    ════════════════════════════════════════════════ */
+    .partner-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+    }
+
+    .partner-card {
+      background: var(--white);
+      border: 0.5px solid var(--border);
+      border-radius: var(--r);
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .partner-icon {
+      width: 44px;
+      height: 44px;
+      background: rgba(26,107,255,0.08);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--blue);
+      margin-bottom: 20px;
+      flex-shrink: 0;
+    }
+    .partner-icon svg { width: 22px; height: 22px; }
+
+    .partner-title {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.4px;
+      color: var(--dark);
+      margin-bottom: 10px;
+    }
+    .partner-desc {
+      font-size: 14px;
+      color: var(--mid);
+      line-height: 1.65;
+      flex: 1;
+      margin-bottom: 24px;
+    }
+    .partner-stat {
+      font-size: 22px;
+      font-weight: 900;
+      letter-spacing: -0.8px;
+      color: var(--blue);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .partner-stat-label {
+      font-size: 12px;
+      color: var(--mid);
+      margin-bottom: 24px;
+    }
+    .partner-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--blue);
+      transition: gap 0.15s;
+    }
+    .partner-link:hover { gap: 10px; }
+    .partner-link svg { width: 14px; height: 14px; }
+
+    /* ════════════════════════════════════════════════
+       MODAL
+    ════════════════════════════════════════════════ */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.45);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity 0.2s ease, visibility 0.2s;
+    }
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: all;
+    }
+
+    .modal {
+      background: var(--white);
+      border-radius: 20px;
+      max-width: 560px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      transform: scale(0.96);
+      opacity: 0;
+      transition: transform 0.2s ease-out, opacity 0.2s ease-out;
+      scrollbar-width: thin;
+    }
+    .modal-overlay.active .modal {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    /* Mobile: slide up from bottom */
+    @media (max-width: 600px) {
+      .modal-overlay { align-items: flex-end; padding: 0; }
+      .modal {
+        border-radius: 20px 20px 0 0;
+        max-height: 92vh;
+        width: 100%;
+        transform: translateY(100%);
+        opacity: 1;
+        transition: transform 0.28s ease-out;
+      }
+      .modal-overlay.active .modal { transform: translateY(0); }
+    }
+
+    .modal-bar {
+      height: 6px;
+      border-radius: 20px 20px 0 0;
+      flex-shrink: 0;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 16px;
+      right: 18px;
+      width: 32px;
+      height: 32px;
+      background: var(--light);
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--mid);
+      font-size: 18px;
+      transition: background 0.15s;
+      z-index: 2;
+    }
+    .modal-close:hover { background: #e0e0e0; }
+
+    .modal-body { padding: 28px 32px 32px; }
+    @media (max-width: 600px) { .modal-body { padding: 20px 20px 28px; } }
+
+    .modal-title {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.6px;
+      color: var(--dark);
+      margin-bottom: 6px;
+    }
+    .modal-date-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--blue);
+      background: rgba(26,107,255,0.08);
+      border-radius: 6px;
+      padding: 4px 10px;
+      margin-bottom: 24px;
+    }
+    .modal-section {
+      margin-bottom: 22px;
+    }
+    .modal-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--mid);
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 0.5px solid var(--border);
+    }
+    .modal-info-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 10px;
+      font-size: 14px;
+      color: var(--dark);
+    }
+    .modal-info-row svg {
+      width: 15px;
+      height: 15px;
+      flex-shrink: 0;
+      color: var(--blue);
+      margin-top: 1px;
+    }
+    .modal-info-row a { color: var(--blue); font-size: 12px; margin-left: 6px; }
+    .modal-on-site-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      color: var(--dark);
+      margin-bottom: 8px;
+    }
+    .modal-on-site-emoji { font-size: 18px; width: 24px; text-align: center; }
+
+    /* share button */
+    .share-wrap { position: relative; display: inline-block; }
+    .share-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      background: var(--white);
+      border: 0.5px solid var(--border);
+      border-radius: 10px;
+      padding: 6px;
+      gap: 4px;
+      flex-direction: column;
+      min-width: 160px;
+      z-index: 10;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    }
+    .share-dropdown.open { display: flex; }
+    .share-opt {
+      font-size: 13px;
+      font-weight: 600;
+      padding: 9px 14px;
+      border-radius: 7px;
+      color: var(--dark);
+      transition: background 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .share-opt:hover { background: var(--light); }
+
+    .modal-footer-note {
+      font-size: 12px;
+      color: var(--mid);
+      text-align: center;
+      margin-top: 16px;
+    }
+    .modal-footer-note a { color: var(--blue); font-weight: 600; }
+
+    /* VIP */
+    .modal-price-block {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin: 6px 0 20px;
+    }
+    .modal-price-num {
+      font-size: 42px;
+      font-weight: 900;
+      letter-spacing: -2px;
+      color: var(--dark);
+    }
+    .modal-price-per {
+      font-size: 14px;
+      color: var(--mid);
+      font-weight: 500;
+    }
+    .vip-limit-note {
+      font-size: 12px;
+      font-weight: 700;
+      color: #dc2626;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .vip-perk {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-bottom: 10px;
+      font-size: 14px;
+      color: var(--dark);
+    }
+    .vip-perk-check {
+      flex-shrink: 0;
+      width: 18px;
+      height: 18px;
+      margin-top: 1px;
+    }
+    .vip-perk-desc {
+      font-size: 12px;
+      color: var(--mid);
+    }
+    .modal-form { display: flex; flex-direction: column; gap: 12px; margin-top: 4px; }
+    .modal-input {
+      width: 100%;
+      padding: 11px 14px;
+      border: 0.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--dark);
+      background: var(--light);
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .modal-input:focus { border-color: var(--blue); background: var(--white); }
+    .modal-select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23555' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 12px center;
+      padding-right: 36px;
+    }
+    .btn-full { width: 100%; justify-content: center; padding: 14px; font-size: 15px; }
+
+    /* Match */
+    .match-vs {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--light);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-bottom: 8px;
+    }
+    .match-team {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--dark);
+      text-align: center;
+      flex: 1;
+    }
+    .match-vs-badge {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--mid);
+      background: var(--white);
+      border: 0.5px solid var(--border);
+      border-radius: 6px;
+      padding: 5px 10px;
+      margin: 0 12px;
+    }
+    .match-mini-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 18px 0;
+    }
+    .match-mini {
+      background: var(--light);
+      border-radius: 10px;
+      padding: 14px 10px;
+      text-align: center;
+    }
+    .match-mini-icon { font-size: 22px; margin-bottom: 6px; }
+    .match-mini-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 2px;
+    }
+    .match-mini-desc { font-size: 11px; color: var(--mid); }
+    .match-price-row {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin: 6px 0 20px;
+    }
+    .match-price-num {
+      font-size: 42px;
+      font-weight: 900;
+      letter-spacing: -2px;
+      color: var(--dark);
+    }
+    .match-price-note {
+      font-size: 13px;
+      color: var(--mid);
+    }
+
+    /* ════════════════════════════════════════════════
+       FOOTER
+    ════════════════════════════════════════════════ */
+    #footer {
+      background: var(--blue);
+      padding: 64px 0 40px;
+      position: relative;
+      overflow: hidden;
+    }
+    .footer-stars {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+    .fstar {
+      position: absolute;
+      color: white;
+    }
+    .fstar.a { width: 260px; top: -80px; right: -40px; opacity: 0.08; }
+    .fstar.b { width: 140px; bottom: -30px; left: 20px; opacity: 0.07; }
+
+    .footer-inner {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+    .footer-brand {
+      font-size: 22px;
+      font-weight: 900;
+      color: white;
+      letter-spacing: -0.5px;
+      margin-bottom: 20px;
+    }
+    .footer-contact {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      font-size: 16px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.9);
+      margin-bottom: 28px;
+    }
+    .footer-contact svg { width: 16px; height: 16px; color: rgba(255,255,255,0.6); }
+
+    .footer-socials {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 48px;
+    }
+    .social-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.12);
+      border: 0.5px solid rgba(255,255,255,0.2);
+      border-radius: var(--r);
+      padding: 10px 20px;
+      color: white;
+      font-size: 14px;
+      font-weight: 600;
+      transition: background 0.18s;
+    }
+    .social-btn:hover { background: rgba(255,255,255,0.22); }
+    .social-btn svg { width: 18px; height: 18px; }
+
+    .footer-copy {
+      font-size: 13px;
+      color: rgba(255,255,255,0.4);
+      border-top: 0.5px solid rgba(255,255,255,0.12);
+      padding-top: 24px;
+    }
+
+    /* ════════════════════════════════════════════════
+       RESPONSIVE
+    ════════════════════════════════════════════════ */
+    @media (max-width: 900px) {
+      .partner-grid { grid-template-columns: 1fr; }
+      .hero-grid { grid-template-columns: 1fr; }
+      .hero-card { aspect-ratio: 4 / 2.2; }
+    }
+
+    @media (max-width: 700px) {
+      .wrap { padding: 0 20px; }
+      .nav-btns { display: none; }
+      .burger { display: flex; }
+      .event-body { flex-wrap: wrap; gap: 16px; }
+      .event-action { width: 100%; flex-direction: row; align-items: center; justify-content: space-between; }
+      .event-date-col { display: flex; gap: 6px; align-items: baseline; }
+      .event-day { font-size: 22px; }
+      .hero-h1 { letter-spacing: -1px; }
+      .section { padding: 64px 0; }
+    }
+
+    @media (max-width: 480px) {
+      .hero-ctas { flex-direction: column; }
+      .hero-ctas .btn { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ════════════════════════════════════════════════
+     NAV
+════════════════════════════════════════════════ -->
+<header id="nav">
+  <div class="wrap">
+    <div class="nav-row">
+      <a href="#hero" class="nav-brand">Street<span>Sessions</span></a>
+      <div class="nav-btns">
+        <a href="#events" class="btn btn-primary">Get Tickets</a>
+        <a href="#partner" class="btn btn-outline">Partner With Us</a>
+      </div>
+      <div class="burger" id="burger" role="button" aria-label="Toggle menu">
+        <b></b><b></b><b></b>
+      </div>
+    </div>
+  </div>
+  <div class="nav-mob" id="nav-mob">
+    <a href="#events" class="btn btn-primary">Get Tickets</a>
+    <a href="#partner" class="btn btn-outline">Partner With Us</a>
+  </div>
+</header>
+
+
+<!-- ════════════════════════════════════════════════
+     HERO
+════════════════════════════════════════════════ -->
+<section id="hero">
+  <div class="wrap">
+    <div class="hero-grid">
+
+      <!-- Left -->
+      <div>
+        <div class="hero-eyebrow fade">Dublin · Every Week</div>
+        <h1 class="hero-h1 fade d1">Free live music, food &amp; drinks — across Dublin</h1>
+        <p class="hero-sub fade d2">Ticketless, spontaneous, community-first pop-up events every week.</p>
+        <div class="hero-ctas fade d3">
+          <a href="#events" class="btn btn-primary">
+            Browse Events
+            <svg width="15" height="15" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7.5h9M8 3.5l4 4-4 4"/></svg>
+          </a>
+          <a href="https://instagram.com" target="_blank" rel="noopener" class="btn btn-ghost">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+            Find us on Instagram
+          </a>
+        </div>
+      </div>
+
+      <!-- Right card -->
+      <div class="hero-card fade d2">
+        <div class="hero-card-stars">
+          <div class="hstar a">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="white">
+              <polygon points="50,5 57,33 82,18 67,43 95,50 67,57 82,82 57,67 50,95 43,67 18,82 33,57 5,50 33,43 18,18 43,33"/>
+            </svg>
+          </div>
+          <div class="hstar b">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="white">
+              <polygon points="50,5 57,33 82,18 67,43 95,50 67,57 82,82 57,67 50,95 43,67 18,82 33,57 5,50 33,43 18,18 43,33"/>
+            </svg>
+          </div>
+          <div class="hstar c">
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="white">
+              <polygon points="50,5 57,33 82,18 67,43 95,50 67,57 82,82 57,67 50,95 43,67 18,82 33,57 5,50 33,43 18,18 43,33"/>
+            </svg>
+          </div>
+        </div>
+
+        <!-- Brand values -->
+        <div class="hero-card-top">
+          <div class="hero-card-label">Why Street Sessions?</div>
+          <div class="hero-card-values">
+            <div class="hc-value">
+              <div class="hc-value-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              </div>
+              <div class="hc-value-text">
+                <div class="hc-value-title">Always Free Entry</div>
+                <div class="hc-value-desc">No tickets, no barriers — just show up</div>
+              </div>
+            </div>
+            <div class="hc-value">
+              <div class="hc-value-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              </div>
+              <div class="hc-value-text">
+                <div class="hc-value-title">Spontaneous &amp; Flexible</div>
+                <div class="hc-value-desc">Announced same-week — keeps it real</div>
+              </div>
+            </div>
+            <div class="hc-value">
+              <div class="hc-value-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
+              <div class="hc-value-text">
+                <div class="hc-value-title">Community-First</div>
+                <div class="hc-value-desc">Local artists, local food, local crowd</div>
+              </div>
+            </div>
+            <div class="hc-value">
+              <div class="hc-value-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19V6l12-3v13M9 19c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm12-3c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2z"/></svg>
+              </div>
+              <div class="hc-value-text">
+                <div class="hc-value-title">~2 Events Per Week</div>
+                <div class="hc-value-desc">Across Dublin's best public spaces</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero-card-foot">
+          <div class="hero-card-pill">Every week · Dublin</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════
+     EVENTS
+════════════════════════════════════════════════ -->
+<section id="events" class="section section-alt">
+  <div class="wrap">
+    <div class="sec-eyebrow fade">Events</div>
+    <h2 class="sec-title fade d1">Upcoming Events</h2>
+    <p class="sec-sub fade d2">All events are free to attend — show up, enjoy the music, grab a drink.</p>
+
+    <div id="events-container" class="ev-list">
+      <!-- populated by JS -->
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════
+     PARTNER
+════════════════════════════════════════════════ -->
+<section id="partner" class="section">
+  <div class="wrap">
+    <div class="sec-eyebrow fade">Partner</div>
+    <h2 class="sec-title fade d1">Work with us</h2>
+    <p class="sec-sub fade d2">We bring the crowd — you bring the experience.</p>
+
+    <div class="partner-grid">
+
+      <!-- Sponsors -->
+      <div class="partner-card fade">
+        <div class="partner-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <div class="partner-title">Sponsors</div>
+        <div class="partner-desc">Get your brand in front of a live, engaged audience every week. Named stage, branded cups, banners and social media coverage at every event.</div>
+        <div class="partner-stat">3–5</div>
+        <div class="partner-stat-label">sponsor slots per event · ~100 events/year · 80–100 guests each</div>
+        <a href="#footer" class="partner-link">
+          Get in touch
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h12M7 1l6 6-6 6"/></svg>
+        </a>
+      </div>
+
+      <!-- Food Trucks -->
+      <div class="partner-card fade d1">
+        <div class="partner-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="2"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+        </div>
+        <div class="partner-title">Food Trucks</div>
+        <div class="partner-desc">No venue fees, no hidden costs. Set up, serve a ready crowd and grow your following. We handle the footfall — you focus on the food.</div>
+        <div class="partner-stat">15%</div>
+        <div class="partner-stat-label">commission on sales · social media exposure · guaranteed footfall</div>
+        <a href="#footer" class="partner-link">
+          Get in touch
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h12M7 1l6 6-6 6"/></svg>
+        </a>
+      </div>
+
+      <!-- Artists -->
+      <div class="partner-card fade d2">
+        <div class="partner-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19V6l12-3v13M9 19c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm12-3c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2z"/></svg>
+        </div>
+        <div class="partner-title">Artists</div>
+        <div class="partner-desc">A real stage, a real audience. We actively promote every artist across Instagram and TikTok. Ideal for emerging local talent looking to build a following in Dublin.</div>
+        <div class="partner-stat">100%</div>
+        <div class="partner-stat-label">free to perform · social media promo included · live audience every time</div>
+        <a href="#footer" class="partner-link">
+          Get in touch
+          <svg viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 7h12M7 1l6 6-6 6"/></svg>
+        </a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ════════════════════════════════════════════════
+     FOOTER
+════════════════════════════════════════════════ -->
+<footer id="footer">
+  <div class="footer-stars">
+    <div class="fstar a">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="white">
+        <polygon points="50,5 57,33 82,18 67,43 95,50 67,57 82,82 57,67 50,95 43,67 18,82 33,57 5,50 33,43 18,18 43,33"/>
+      </svg>
+    </div>
+    <div class="fstar b">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill="white">
+        <polygon points="50,5 57,33 82,18 67,43 95,50 67,57 82,82 57,67 50,95 43,67 18,82 33,57 5,50 33,43 18,18 43,33"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="footer-inner">
+      <div class="footer-brand">Street Sessions</div>
+
+      <div class="footer-contact">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        info@streetsessions.com
+      </div>
+
+      <div class="footer-socials">
+        <a href="#" class="social-btn" aria-label="Instagram">
+          <!-- Instagram SVG -->
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
+          </svg>
+          Instagram
+        </a>
+        <a href="#" class="social-btn" aria-label="TikTok">
+          <!-- TikTok SVG -->
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05A6.34 6.34 0 0 0 3.15 15.3a6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.34-6.34V8.87a8.18 8.18 0 0 0 4.78 1.52V7a4.85 4.85 0 0 1-1.02-.31z"/>
+          </svg>
+          TikTok
+        </a>
+      </div>
+
+      <div class="footer-copy">© 2025 Street Sessions. Free live music, always.</div>
+    </div>
+  </div>
+</footer>
+
+
+<!-- ════════════════════════════════════════════════
+     UNIFIED MODAL
+════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-overlay" role="dialog" aria-modal="true">
+  <div class="modal">
+    <div class="modal-bar modal-bar-blue"></div>
+    <button class="modal-close" data-close aria-label="Close">&times;</button>
+    <div class="modal-body">
+      <h2 class="modal-title">Street Sessions @ Merrion Square</h2>
+      <span class="modal-date-tag">Sat 12 Apr · Free Entry</span>
+
+      <div class="modal-section">
+        <div class="modal-section-title">Event Info</div>
+        <div class="modal-info-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Saturday 12 April · Doors from 4:00 PM
+        </div>
+        <div class="modal-info-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Merrion Square Park, Dublin 2
+          <a href="#" target="_blank" rel="noopener">View on Maps ↗</a>
+        </div>
+        <div class="modal-info-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19V6l12-3v13M9 19c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm12-3c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2z"/></svg>
+          The Grattan Brothers — Indie Folk
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-section-title">On the Day</div>
+        <div class="modal-on-site-item">
+          <span class="modal-on-site-emoji">🍔</span>
+          Burger Bros food truck — smash burgers &amp; loaded fries
+        </div>
+        <div class="modal-on-site-item">
+          <span class="modal-on-site-emoji">🌮</span>
+          Taco Loco — street tacos &amp; quesadillas
+        </div>
+        <div class="modal-on-site-item">
+          <span class="modal-on-site-emoji">🍺</span>
+          Portable bar — pints from €7.50, wine €9, cocktails €16
+        </div>
+      </div>
+
+      <div class="modal-section" style="margin-bottom:0">
+        <div class="modal-section-title">Get Involved</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <a href="#" class="btn btn-primary" style="flex:1;justify-content:center;" onclick="downloadIcs(event)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Add to Calendar
+          </a>
+          <div class="share-wrap" style="flex:1;">
+            <button class="btn btn-outline" style="width:100%;justify-content:center;" onclick="toggleShare(this)">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+              Share
+            </button>
+            <div class="share-dropdown">
+              <a class="share-opt" href="https://instagram.com" target="_blank" rel="noopener">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                Instagram
+              </a>
+              <a class="share-opt" href="whatsapp://send?text=Street Sessions at Merrion Square this Saturday!" target="_blank" rel="noopener">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413z"/></svg>
+                WhatsApp
+              </a>
+            </div>
+          </div>
+        </div>
+        <p class="modal-footer-note">Follow <a href="#" target="_blank">@streetsessions</a> for real-time updates on location &amp; lineup.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════
+     MODAL 2 — VIP
+════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-vip" role="dialog" aria-modal="true" aria-label="VIP booking">
+  <div class="modal">
+    <div class="modal-bar modal-bar-gold"></div>
+    <button class="modal-close" data-close aria-label="Close">&times;</button>
+    <div class="modal-body">
+      <h2 class="modal-title">VIP Experience</h2>
+      <div class="vip-limit-note">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        Limited spots per event — book early
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-section-title">Pricing</div>
+        <div class="modal-price-block">
+          <span class="modal-price-num">€30–50</span>
+          <span class="modal-price-per">per person</span>
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-section-title">What's Included</div>
+        <div class="vip-perk">
+          <svg class="vip-perk-check" viewBox="0 0 24 24" fill="none" stroke="#1A6BFF" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          <div>
+            <div>Exclusive bar area</div>
+            <div class="vip-perk-desc">Skip the queue — your own dedicated bar section</div>
+          </div>
+        </div>
+        <div class="vip-perk">
+          <svg class="vip-perk-check" viewBox="0 0 24 24" fill="none" stroke="#1A6BFF" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          <div>
+            <div>Meet the artist</div>
+            <div class="vip-perk-desc">Backstage meet &amp; greet after the show</div>
+          </div>
+        </div>
+        <div class="vip-perk">
+          <svg class="vip-perk-check" viewBox="0 0 24 24" fill="none" stroke="#1A6BFF" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          <div>
+            <div>Front section standing</div>
+            <div class="vip-perk-desc">Best view in the house, guaranteed</div>
+          </div>
+        </div>
+        <div class="vip-perk">
+          <svg class="vip-perk-check" viewBox="0 0 24 24" fill="none" stroke="#1A6BFF" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          <div>
+            <div>Priority entry</div>
+            <div class="vip-perk-desc">Enter 30 minutes before general admission</div>
+          </div>
+        </div>
+        <div class="vip-perk">
+          <svg class="vip-perk-check" viewBox="0 0 24 24" fill="none" stroke="#1A6BFF" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+          <div>
+            <div>Exclusive restroom access</div>
+            <div class="vip-perk-desc">Private facilities, no waiting</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-section" style="margin-bottom:0">
+        <div class="modal-section-title">Reserve Your Spot</div>
+        <form class="modal-form" onsubmit="submitVip(event)">
+          <input class="modal-input" type="text" placeholder="Your name" required>
+          <input class="modal-input" type="email" placeholder="Email address" required>
+          <select class="modal-input modal-select">
+            <option value="" disabled selected>Number of people</option>
+            <option value="1">1 person</option>
+            <option value="2">2 people</option>
+            <option value="3">3 people</option>
+            <option value="4">4 people</option>
+          </select>
+          <button type="submit" id="vip-submit" class="btn btn-primary btn-full">Reserve My Spot</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════════════════════════════════
+     MODAL 3 — Match Viewing
+════════════════════════════════════════════════ -->
+<div class="modal-overlay" id="modal-match" role="dialog" aria-modal="true" aria-label="Match day tickets">
+  <div class="modal">
+    <div class="modal-bar modal-bar-orange"></div>
+    <button class="modal-close" data-close aria-label="Close">&times;</button>
+    <div class="modal-body">
+      <h2 class="modal-title">Match Day Sessions</h2>
+      <span class="modal-date-tag" style="background:rgba(255,107,53,0.1);color:#FF6B35;">Sat 19 Apr · Smithfield Square</span>
+
+      <div class="modal-section">
+        <div class="modal-section-title">The Match</div>
+        <div class="match-vs">
+          <div class="match-team">Man United</div>
+          <span class="match-vs-badge">VS</span>
+          <div class="match-team">Arsenal</div>
+        </div>
+        <div class="modal-info-row" style="margin-top:8px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Kick-off 5:30 PM · Outdoor big screen broadcast
+        </div>
+        <div class="modal-info-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Smithfield Square, Dublin 7
+        </div>
+      </div>
+
+      <div class="modal-section">
+        <div class="modal-section-title">The Experience</div>
+        <div class="match-mini-cards">
+          <div class="match-mini">
+            <div class="match-mini-icon">📺</div>
+            <div class="match-mini-label">Live Screen</div>
+            <div class="match-mini-desc">Big screen outdoor broadcast</div>
+          </div>
+          <div class="match-mini">
+            <div class="match-mini-icon">🍺</div>
+            <div class="match-mini-label">Bar Open</div>
+            <div class="match-mini-desc">Full bar from 5 PM</div>
+          </div>
+          <div class="match-mini">
+            <div class="match-mini-icon">🎵</div>
+            <div class="match-mini-label">Live Music</div>
+            <div class="match-mini-desc">Ciarán Flood pre-match</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-section" style="margin-bottom:0">
+        <div class="modal-section-title">Tickets</div>
+        <div class="match-price-row">
+          <span class="match-price-num">€2</span>
+          <span class="match-price-note">guaranteed entry · limited capacity</span>
+        </div>
+        <a href="#" class="btn btn-primary btn-full">
+          Get Tickets
+          <svg width="14" height="14" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7.5h9M8 3.5l4 4-4 4"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  /* ════════════════════════════════════════════════
+     EVENT DATA
+  ════════════════════════════════════════════════ */
+  const EVENTS = [
+    {
+      date: 12, month: 'APR',
+      title: 'Street Sessions @ Merrion Square',
+      time: 'Sat 4:00 PM', location: 'Merrion Square Park, D2',
+      artist: 'The Grattan Brothers', genre: 'Indie Folk',
+      foodTrucks: ['Camile Thai', 'The Falafel Guys'],
+      hasVIP: false, hasMatchViewing: false, matchInfo: null
+    },
+    {
+      date: 15, month: 'APR',
+      title: 'Grand Canal Sessions',
+      time: 'Tue 6:00 PM', location: 'Grand Canal Square, D2',
+      artist: 'Aoife Dunne', genre: 'Pop / Soul',
+      foodTrucks: ['Boojum', 'Dublin Pizza Co.'],
+      hasVIP: true, hasMatchViewing: true,
+      matchInfo: { homeTeam: 'Man Utd', awayTeam: 'Arsenal', kickoff: '8:00 PM' }
+    },
+    {
+      date: 19, month: 'APR',
+      title: 'Smithfield Sessions',
+      time: 'Sat 5:30 PM', location: 'Smithfield Square, D7',
+      artist: 'Ciarán Flood', genre: 'Electronic / Live',
+      foodTrucks: ['Grano', 'Seoul Bird'],
+      hasVIP: true, hasMatchViewing: false, matchInfo: null
+    }
+  ];
+
+  /* ════════════════════════════════════════════════
+     SVG ICON STRINGS
+  ════════════════════════════════════════════════ */
+  const I_CLOCK = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>';
+  const I_PIN   = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>';
+  const I_MUSIC = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19V6l12-3v13M9 19c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm12-3c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2z"/></svg>';
+  const I_CHECK = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A6BFF" stroke-width="2.5" style="flex-shrink:0;margin-top:2px"><polyline points="20 6 9 17 4 12"/></svg>';
+  const I_CAL   = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>';
+  const I_SHARE = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>';
+  const I_ARROW = '<svg width="13" height="13" viewBox="0 0 15 15" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 7.5h9M8 3.5l4 4-4 4"/></svg>';
+  const I_SCR   = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>';
+  const I_CUP   = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>';
+  const I_NOTE  = '<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19V6l12-3v13M9 19c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm12-3c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2z"/></svg>';
+
+  /* ════════════════════════════════════════════════
+     SETUP UNIFIED MODAL (replaces static HTML)
+  ════════════════════════════════════════════════ */
+  (function setupModal() {
+    // Replace old static modal(s) with a single clean shell
+    const existing = document.getElementById('modal-overlay');
+    if (existing) existing.remove();
+    ['modal-vip', 'modal-match'].forEach(id => { const e = document.getElementById(id); if (e) e.remove(); });
+
+    const shell = document.createElement('div');
+    shell.id = 'modal-overlay';
+    shell.className = 'modal-overlay';
+    shell.setAttribute('role', 'dialog');
+    shell.setAttribute('aria-modal', 'true');
+    shell.innerHTML =
+      '<div class="modal" id="modal-box">' +
+        '<div class="modal-bar" id="modal-bar"></div>' +
+        '<button class="modal-close" id="modal-close" aria-label="Close">&times;</button>' +
+        '<div class="modal-body" id="modal-content"></div>' +
+      '</div>';
+    document.body.appendChild(shell);
+
+    // Wire up close handlers
+    shell.addEventListener('click', e => { if (e.target === shell) closeModal(); });
+    shell.querySelector('#modal-close').addEventListener('click', closeModal);
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && shell.classList.contains('active')) closeModal();
+    });
+  })();
+
+  /* ── Modal open / close ── */
+  function showModal(type, data) {
+    const overlay = document.getElementById('modal-overlay');
+    document.getElementById('modal-content').innerHTML = buildContent(type, data);
+    const barColors = { event: '#1A6BFF', vip: '#C9A84C', match: '#FF6B35' };
+    document.getElementById('modal-bar').style.background = barColors[type] || '#1A6BFF';
+    document.body.style.overflow = 'hidden';
+    overlay.scrollTop = 0;
+    requestAnimationFrame(() => requestAnimationFrame(() => overlay.classList.add('active')));
+  }
+
+  function closeModal() {
+    const overlay = document.getElementById('modal-overlay');
+    overlay.classList.remove('active');
+    overlay.addEventListener('transitionend', () => { document.body.style.overflow = ''; }, { once: true });
+  }
+
+  /* ════════════════════════════════════════════════
+     MODAL CONTENT BUILDERS
+  ════════════════════════════════════════════════ */
+  function buildContent(type, data) {
+    if (type === 'event') return buildEventModal(data);
+    if (type === 'vip')   return buildVipModal();
+    if (type === 'match') return buildMatchModal(data);
+    return '';
+  }
+
+  function buildEventModal(ev) {
+    const idx = EVENTS.indexOf(ev);
+    const foods = ev.foodTrucks.map(f =>
+      '<div class="modal-on-site-item"><span class="modal-on-site-emoji">\uD83C\uDF7D</span>' + f + '</div>'
+    ).join('');
+    const wa = 'https://wa.me/?text=' + encodeURIComponent('Check out: ' + ev.title + ' at ' + ev.location + '!');
+    return (
+      '<h2 class="modal-title">' + ev.title + '</h2>' +
+      '<span class="modal-date-tag">' + ev.time + ' \u00B7 Free Entry</span>' +
+      '<div class="modal-section"><div class="modal-section-title">Event Info</div>' +
+        '<div class="modal-info-row">' + I_CLOCK + ' ' + ev.time + '</div>' +
+        '<div class="modal-info-row">' + I_PIN + ' ' + ev.location + ' <a href="#" target="_blank">View on Maps \u2197</a></div>' +
+        '<div class="modal-info-row">' + I_MUSIC + ' ' + ev.artist + ' \u2014 ' + ev.genre + '</div>' +
+      '</div>' +
+      '<div class="modal-section"><div class="modal-section-title">On the Day</div>' +
+        foods +
+        '<div class="modal-on-site-item"><span class="modal-on-site-emoji">\uD83C\uDF7A</span>Portable bar \u2014 pints \u20AC7.50 \u00B7 wine \u20AC9 \u00B7 cocktails \u20AC16</div>' +
+      '</div>' +
+      '<div class="modal-section" style="margin-bottom:0"><div class="modal-section-title">Get Involved</div>' +
+        '<div style="display:flex;gap:10px;flex-wrap:wrap">' +
+          '<button class="btn btn-primary" style="flex:1;justify-content:center" onclick="downloadIcs(' + idx + ')">' + I_CAL + ' Add to Calendar</button>' +
+          '<div class="share-wrap" style="flex:1">' +
+            '<button class="btn btn-outline" style="width:100%;justify-content:center" onclick="toggleShare(this)">' + I_SHARE + ' Share</button>' +
+            '<div class="share-dropdown">' +
+              '<a class="share-opt" href="#" onclick="navigator.clipboard.writeText(window.location.href);this.textContent=\'Copied!\';setTimeout(()=>this.textContent=\'Copy Link\',1500);return false">Copy Link</a>' +
+              '<a class="share-opt" href="' + wa + '" target="_blank" rel="noopener">WhatsApp</a>' +
+            '</div>' +
+          '</div>' +
+        '</div>' +
+        '<p class="modal-footer-note">Follow <a href="#" target="_blank">@streetsessions</a> for real-time updates on location &amp; lineup.</p>' +
+      '</div>'
+    );
+  }
+
+  function buildVipModal() {
+    const perks = [
+      ['Exclusive bar area', 'no queuing \u2014 your own dedicated section'],
+      ['Meet the artist after each show', 'backstage access, every event'],
+      ['Front section standing', 'best view in the house, guaranteed'],
+      ['Priority entry 30 mins early', 'skip the queue, every time'],
+      ['Exclusive restroom access', 'private facilities, no waiting'],
+      ['Early event announcements', 'be first to know each week']
+    ];
+    return (
+      '<h2 class="modal-title">Street Sessions VIP</h2>' +
+      '<p style="font-size:14px;color:var(--mid);margin-bottom:20px">Year-round access \u00B7 Priority at every event</p>' +
+      '<div class="modal-section"><div class="modal-section-title">Pricing</div>' +
+        '<div class="modal-price-block"><span class="modal-price-num">\u20AC30\u201350</span><span class="modal-price-per">per event</span></div>' +
+        '<div class="vip-limit-note"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>Limited spots per event \u2014 book early</div>' +
+      '</div>' +
+      '<div class="modal-section"><div class="modal-section-title">What\'s Included</div>' +
+        perks.map(([t, d]) =>
+          '<div class="vip-perk">' + I_CHECK + '<div><div>' + t + '</div><div class="vip-perk-desc">' + d + '</div></div></div>'
+        ).join('') +
+      '</div>' +
+      '<div class="modal-section" style="margin-bottom:0"><div class="modal-section-title">Reserve Your Spot</div>' +
+        '<form class="modal-form" id="vip-form" onsubmit="handleVipSubmit(event)">' +
+          '<input class="modal-input" type="text" placeholder="Your name" required>' +
+          '<input class="modal-input" type="email" placeholder="Email address" required>' +
+          '<select class="modal-input modal-select" required>' +
+            '<option value="" disabled selected>Number of people</option>' +
+            '<option>1 person</option><option>2 people</option><option>3 people</option><option>4 people</option>' +
+          '</select>' +
+          '<button type="submit" id="vip-submit" class="btn btn-primary btn-full">Reserve My VIP Spot</button>' +
+        '</form>' +
+      '</div>'
+    );
+  }
+
+  function buildMatchModal(ev) {
+    const m = ev.matchInfo;
+    return (
+      '<h2 class="modal-title">Match Day Sessions</h2>' +
+      '<span class="modal-date-tag" style="background:rgba(255,107,53,.1);color:#FF6B35">' + ev.time + ' \u00B7 ' + ev.location + '</span>' +
+      '<div class="modal-section"><div class="modal-section-title">The Match</div>' +
+        '<div class="match-vs"><div class="match-team">' + m.homeTeam + '</div><span class="match-vs-badge">VS</span><div class="match-team">' + m.awayTeam + '</div></div>' +
+        '<div class="modal-info-row">' + I_CLOCK + ' Kick-off ' + m.kickoff + ' \u00B7 Outdoor big screen broadcast</div>' +
+        '<div class="modal-info-row">' + I_PIN + ' ' + ev.location + '</div>' +
+      '</div>' +
+      '<div class="modal-section"><div class="modal-section-title">The Experience</div>' +
+        '<div class="match-mini-cards">' +
+          '<div class="match-mini"><div class="match-mini-icon">' + I_SCR + '</div><div class="match-mini-label">Live Screen</div><div class="match-mini-desc">Big screen broadcast</div></div>' +
+          '<div class="match-mini"><div class="match-mini-icon">' + I_CUP + '</div><div class="match-mini-label">Bar Open</div><div class="match-mini-desc">Full bar from 5 PM</div></div>' +
+          '<div class="match-mini"><div class="match-mini-icon">' + I_NOTE + '</div><div class="match-mini-label">Live Music</div><div class="match-mini-desc">' + ev.artist + ' pre-match</div></div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="modal-section" style="margin-bottom:0"><div class="modal-section-title">Tickets</div>' +
+        '<div class="match-price-row"><span class="match-price-num">\u20AC2</span><span class="match-price-note">guaranteed entry \u00B7 limited capacity</span></div>' +
+        '<a href="#" class="btn btn-full" style="background:#FF6B35;border-color:#FF6B35;color:white;justify-content:center;padding:14px;font-size:15px;border-radius:10px;display:flex;align-items:center;gap:6px">Get Tickets ' + I_ARROW + '</a>' +
+      '</div>'
+    );
+  }
+
+  /* ════════════════════════════════════════════════
+     UTILITIES
+  ════════════════════════════════════════════════ */
+  function downloadIcs(idx) {
+    const ev = EVENTS[idx];
+    const MO = { JAN:'01',FEB:'02',MAR:'03',APR:'04',MAY:'05',JUN:'06',
+                 JUL:'07',AUG:'08',SEP:'09',OCT:'10',NOV:'11',DEC:'12' };
+    const mo = MO[ev.month] || '04';
+    const dd = String(ev.date).padStart(2,'0');
+    const t  = ev.time.match(/(\d+):(\d+)\s*(AM|PM)/i);
+    let h = parseInt(t[1]), m = parseInt(t[2]);
+    if (t[3].toUpperCase() === 'PM' && h !== 12) h += 12;
+    if (t[3].toUpperCase() === 'AM' && h === 12) h = 0;
+    const hs = String(h).padStart(2,'0'), ms = String(m).padStart(2,'0');
+    const he = String(Math.min(h + 3, 23)).padStart(2,'0');
+    const ics = [
+      'BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Street Sessions//EN',
+      'BEGIN:VEVENT',
+      'DTSTART:2025' + mo + dd + 'T' + hs + ms + '00',
+      'DTEND:2025'   + mo + dd + 'T' + he + ms + '00',
+      'SUMMARY:'     + ev.title,
+      'LOCATION:'    + ev.location,
+      'DESCRIPTION:Free live music. Ticketless \u2014 just show up!',
+      'END:VEVENT','END:VCALENDAR'
+    ].join('\r\n');
+    const a = Object.assign(document.createElement('a'), {
+      href: URL.createObjectURL(new Blob([ics], { type: 'text/calendar' })),
+      download: 'street-sessions.ics'
+    });
+    a.click(); URL.revokeObjectURL(a.href);
+  }
+
+  function toggleShare(btn) {
+    const dd = btn.nextElementSibling;
+    dd.classList.toggle('open');
+    const close = e => {
+      if (!dd.contains(e.target) && e.target !== btn) {
+        dd.classList.remove('open');
+        document.removeEventListener('click', close);
+      }
+    };
+    setTimeout(() => document.addEventListener('click', close), 0);
+  }
+
+  function handleVipSubmit(e) {
+    e.preventDefault();
+    const btn = document.getElementById('vip-submit');
+    btn.textContent = "Request received \u2014 we'll be in touch!";
+    btn.disabled = true;
+    btn.style.cssText += ';background:#22c55e;border-color:#22c55e;cursor:default';
+  }
+
+  /* ════════════════════════════════════════════════
+     NAV + SCROLL + FADE-IN
+  ════════════════════════════════════════════════ */
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 8), { passive: true });
+
+  const burger = document.getElementById('burger');
+  const mob    = document.getElementById('nav-mob');
+  burger.addEventListener('click', () => { const o = mob.classList.toggle('open'); burger.classList.toggle('open', o); });
+  mob.querySelectorAll('a').forEach(a => a.addEventListener('click', () => {
+    mob.classList.remove('open'); burger.classList.remove('open');
+  }));
+
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const t = document.querySelector(a.getAttribute('href'));
+      if (!t) return; e.preventDefault();
+      window.scrollTo({ top: t.offsetTop - nav.offsetHeight, behavior: 'smooth' });
+    });
+  });
+
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
+  }, { threshold: 0.08, rootMargin: '0px 0px -36px 0px' });
+
+  // Render JS-driven event cards, then observe ALL .fade elements
+  renderEvents();
+  document.querySelectorAll('.fade').forEach(el => io.observe(el));
+
+  /* ── Render event cards ── */
+  function renderEvents() {
+    const container = document.getElementById('events-container');
+    if (!container) return;
+    container.innerHTML = EVENTS.map((ev, i) => {
+      const accent = ev.hasMatchViewing ? 'ev-accent-orange' : ev.hasVIP ? 'ev-accent-gold' : 'ev-accent-blue';
+      const tags = [
+        '<span class="tag tag-free">Free Entry</span>',
+        ev.hasVIP   ? '<span class="tag tag-vip">VIP Available</span>'  : '',
+        ev.hasMatchViewing ? '<span class="tag tag-match">Match Day</span>' : ''
+      ].filter(Boolean).join('');
+      const btns = [
+        '<button class="ev-btn ev-btn-cal" onclick="event.stopPropagation();downloadIcs(' + i + ')">' + I_CAL + ' Add to Calendar</button>',
+        ev.hasVIP   ? '<button class="ev-btn ev-btn-vip"   onclick="event.stopPropagation();showModal(\'vip\',EVENTS[' + i + '])">VIP Access</button>'              : '',
+        ev.hasMatchViewing ? '<button class="ev-btn ev-btn-match" onclick="event.stopPropagation();showModal(\'match\',EVENTS[' + i + '])">Match Viewing \u20AC2</button>' : ''
+      ].filter(Boolean).join('');
+      return (
+        '<div class="ev-card fade' + (i ? ' d' + i : '') + '" onclick="showModal(\'event\',EVENTS[' + i + '])">' +
+          '<div class="ev-accent ' + accent + '"></div>' +
+          '<div class="ev-date"><div class="ev-day">' + ev.date + '</div><div class="ev-month">' + ev.month + '</div></div>' +
+          '<div class="ev-vdivide"></div>' +
+          '<div class="ev-info">' +
+            '<div class="ev-tags">' + tags + '</div>' +
+            '<div class="ev-title">' + ev.title + '</div>' +
+            '<div class="ev-meta">' +
+              '<span class="ev-meta-item">' + I_CLOCK + ' ' + ev.time + '</span>' +
+              '<span class="ev-meta-item">' + I_PIN   + ' ' + ev.location + '</span>' +
+            '</div>' +
+          '</div>' +
+          '<div class="ev-vdivide"></div>' +
+          '<div class="ev-actions" onclick="event.stopPropagation()">' + btns + '</div>' +
+        '</div>'
+      );
+    }).join('');
+  }
+</script>
+</body>
+</html>
